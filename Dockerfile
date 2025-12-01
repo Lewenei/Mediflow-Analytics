@@ -1,5 +1,5 @@
 # Dockerfile — Nginx + PHP-FPM (fast & pro)
-FROM php:8.2-fpm-alpine AS php
+FROM php:8.3-fpm-alpine AS php
 
 # Install system deps + PHP extensions
 RUN apk add --no-cache \
@@ -11,7 +11,8 @@ RUN apk add --no-cache \
     libxml2-dev \
     zip \
     unzip \
-    git
+    git \
+    sqlite-libs 
 
 RUN docker-php-ext-install pdo pdo_sqlite sqlite3 mbstring exif pcntl bcmath gd
 
