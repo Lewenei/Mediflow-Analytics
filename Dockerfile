@@ -1,4 +1,4 @@
-# Dockerfile — FINAL VERSION THAT WORKS ON RENDER (Dec 2025)
+# Dockerfile – GUARANTEED TO WORK ON RENDER (Dec 2025)
 FROM php:8.2-fpm
 
 # Install everything
@@ -18,31 +18,37 @@ RUN apt-get update && apt-get install -y \
 # Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd
 
-# Get Composer
+# Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Create app directory
 WORKDIR /var/www/html
 COPY . .
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Create SQLite file + folders (no chown yet — we'll do it as www-data later)
-RUN mkdir -p database storage/logs bootstrap/cache
-RUN touch database/database.sqlite
+# Create folders + SQLite file
+RUN mkdir -p database storage/logs bootstrap/cache \
+    && touch database/database.sqlite \
+    && chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 storage bootstrap/cache \
+    && chmod 664 database/database.sqlite
 
 # Copy configs
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/supervisord.conf /etc/supervisord.conf
 
-# Give permissions AFTER everything is in place (run as www-data)
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 storage bootstrap/cache \
-    && chmod 664 database/database.sqlite
-
-# Run migrations
-RUN php artisan migrate --force
+# ←←← MIGRATIONS NOW RUN AT RUNTIME (NOT BUILD TIME) ←←←
+# We do it in entrypoint script instead
 
 EXPOSE 80
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+
+# Custom entrypoint that runs migrations then starts server
+COPY <<'EOF' /entrypoint.sh
+#!/bin/sh
+php artisan migrate --force
+exec /usr/bin/supervisord -c /etc/supervisord.conf
+EOF
+
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
