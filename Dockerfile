@@ -1,7 +1,7 @@
-# Dockerfile — Nginx + PHP-FPM (fast & pro)
+# Dockerfile — Fixed Nginx + PHP-FPM for MediFlow Analytics (Alpine + SQLite)
 FROM php:8.3-fpm-alpine AS php
 
-# Install system deps + PHP extensions
+# Install system dependencies (including SQLite lib for PDO)
 RUN apk add --no-cache \
     nginx \
     supervisor \
@@ -12,32 +12,34 @@ RUN apk add --no-cache \
     zip \
     unzip \
     git \
-    sqlite-libs 
+    sqlite-libs  # ← FIXED: SQLite system library for PDO
 
-RUN docker-php-ext-install pdo pdo_sqlite sqlite3 mbstring exif pcntl bcmath gd
+# Install PHP extensions (PDO for SQLite, no sqlite3 needed)
+RUN docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Create app directory
+# Set working directory
 WORKDIR /var/www/html
 
-# Copy project
+# Copy project files
 COPY . .
 
-# Install dependencies
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Create required directories
-RUN mkdir -p storage/logs bootstrap/cache
-RUN chown -R www-data:www-data storage bootstrap/cache database
+# Create required directories + set permissions
+RUN mkdir -p storage/logs bootstrap/cache database \
+    && chown -R www-data:www-data storage bootstrap/cache database \
+    && chmod -R 755 storage bootstrap/cache database
 
-# Copy Nginx + Supervisor config
+# Copy configs
 COPY docker/nginx.conf /etc/nginx/nginx.conf
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Expose port 80
 EXPOSE 80
 
-# Start Supervisor (runs PHP-FPM + Nginx)
+# Start Supervisor (Nginx + PHP-FPM)
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
