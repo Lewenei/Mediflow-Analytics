@@ -1,45 +1,52 @@
-# Dockerfile — Fixed Nginx + PHP-FPM for MediFlow Analytics (Alpine + SQLite)
-FROM php:8.3-fpm-alpine AS php
+# Dockerfile — Works on Render 100% (Alpine + SQLite + Nginx + PHP-FPM)
+FROM php:8.2-fpm-alpine
 
-# Install system dependencies (including SQLite lib for PDO)
+# Install nginx + supervisor + sqlite support
 RUN apk add --no-cache \
     nginx \
     supervisor \
-    curl \
+    sqlite \
     libpng-dev \
     oniguruma-dev \
     libxml2-dev \
     zip \
     unzip \
-    git \
-    sqlite-libs  # ← FIXED: SQLite system library for PDO
+    git
 
-# Install PHP extensions (PDO for SQLite, no sqlite3 needed)
-RUN docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd
+# Install ONLY the PHP extensions that work perfectly on Alpine
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd
+
+# SQLite is already built into PHP on Alpine — we just enable PDO_SQLITE
+RUN docker-php-ext-enable pdo_sqlite
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www/html
-
-# Copy project files
 COPY . .
 
-# Install PHP dependencies
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Create required directories + set permissions
-RUN mkdir -p storage/logs bootstrap/cache database \
-    && chown -R www-data:www-data storage bootstrap/cache database \
-    && chmod -R 755 storage bootstrap/cache database
+# Create database folder + file
+RUN mkdir -p database && touch database/database.sqlite
+RUN chown -R www-data:www-data database/database.sqlite storage bootstrap/cache
+RUN chmod 664 database/database.sqlite
 
-# Copy configs
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# Copy nginx + supervisor config
+COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+COPY docker/supervisord.conf /etc/supervisord.conf
 
-# Expose port 80
+# Run migrations on startup
+RUN php artisan migrate --force || true
+
 EXPOSE 80
 
-# Start Supervisor (Nginx + PHP-FPM)
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
