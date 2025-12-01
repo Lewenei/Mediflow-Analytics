@@ -1,48 +1,48 @@
-# Dockerfile — GUARANTEED to work on Render (Debian + PHP 8.2 + Nginx)
+# Dockerfile — FINAL VERSION THAT WORKS ON RENDER (Dec 2025)
 FROM php:8.2-fpm
 
-# Install system packages + nginx
+# Install everything
 RUN apt-get update && apt-get install -y \
     nginx \
     supervisor \
+    sqlite3 \
+    libsqlite3-dev \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
     zip \
     unzip \
     git \
-    sqlite3 \
-    libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions (this line works perfectly on Debian)
+# Install PHP extensions
 RUN docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd
 
-# Install Composer
+# Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
+# Create app directory
 WORKDIR /var/www/html
-
-# Copy project
 COPY . .
 
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-# Create SQLite database file + set permissions
-RUN mkdir -p database \
-    && touch database/database.sqlite \
-    && chown -R www-data:www-data database storage bootstrap/cache \
-    && chmod 664 database/database.sqlite
+# Create SQLite file + folders (no chown yet — we'll do it as www-data later)
+RUN mkdir -p database storage/logs bootstrap/cache
+RUN touch database/database.sqlite
 
-# Copy config files
+# Copy configs
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/supervisord.conf /etc/supervisord.conf
+
+# Give permissions AFTER everything is in place (run as www-data)
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 storage bootstrap/cache \
+    && chmod 664 database/database.sqlite
 
 # Run migrations
 RUN php artisan migrate --force
 
 EXPOSE 80
-
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
