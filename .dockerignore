@@ -1,0 +1,5 @@
+echo "vendor/
+node_modules/
+.env
+.git
+.docker" > .dockerignore
