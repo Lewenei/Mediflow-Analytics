@@ -13,6 +13,7 @@ chown www-data:www-data /var/www/html/storage/logs/lumen.log
 
 # Run migrations
 php artisan migrate --force --no-interaction
+php artisan db:seed --class=PatientsSeeder --force
 
 # Start everything
 exec /usr/bin/supervisord -c /etc/supervisord.conf
