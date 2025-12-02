@@ -1,4 +1,4 @@
-# Dockerfile – GUARANTEED TO WORK ON RENDER (Dec 2025)
+# Dockerfile for on Render
 FROM php:8.2-fpm
 
 # Install everything
