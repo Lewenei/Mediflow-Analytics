@@ -1,24 +1,47 @@
 <?php
 
 use Illuminate\Http\Request;
+use Laravel\Lumen\Routing\Router;
 
+/** @var Router $router */
+
+// Welcome message
 $router->get('/', function () {
     return response()->json([
-        'project' => 'MediFlow Analytics',
-        'version' => '1.0',
-        'message' => 'Hospital Intelligence Platform – Ready',
+        'project'  => 'MediFlow Hospital Analytics',
+        'version'  => '1.0',
+        'status'   => 'running',
+        'message'  => 'Hospital Intelligence Platform – Empowering Healthcare with Data-Driven Insights',
         'endpoints' => [
-            'GET /api/patients',
-            'POST /api/patients',
-            'GET /api/patients/{id}',
-            'GET /api/analytics/revenue-kpi (coming)',
-            '/dashboard (live demo)'
-        ]
+            'GET    /api/patients',
+            'GET    /api/patients/{id}',
+            'POST   /api/patients',
+            'GET    /api/invoices',
+            'GET    /api/invoices/{id}',
+            'GET    /api/invoices/{id}/pdf',
+            'GET    /api/analytics/revenue-kpi (coming soon)',
+        ],
+        'demo' => 'https://mediflow-analytics.onrender.com',
     ]);
 });
 
-$router->group(['prefix' => 'patients'], function ($router) {
-    $router->get('/', 'Api\PatientController@index');
-    $router->post('/', 'Api\PatientController@store');
-    $router->get('/{patient}', 'Api\PatientController@show');
+// Standard API (Prefix) Routes
+$router->group(['prefix' => 'api'], function ($router) {
+
+    // Patients Resource
+    $router->group(['prefix' => 'patients'], function ($router) {
+        $router->get('/', 'Api\PatientController@index');        // GET    /api/patients
+        $router->post('/', 'Api\PatientController@store');       // POST   /api/patients
+        $router->get('/{patient}', 'Api\PatientController@show'); // GET    /api/patients/123
+        // TO-DO   Add PUT/PATCH /api/patients/{id} and DELETE
+    });
+
+    // Invoices Resource + PDF
+    $router->get('invoices', 'Api\InvoiceController@index');                    // GET    /api/invoices
+    $router->get('invoices/{invoice}', 'Api\InvoiceController@show');           // GET    /api/invoices/1
+    $router->get('invoices/{invoice}/pdf', 'Api\InvoiceController@pdf');        // GET    /api/invoices/1/pdf
+
+    // Future routes (add later)
+    // $router->post('invoices', 'Api\InvoiceController@store');
+    // $router->get('analytics/revenue-kpi', 'Api\AnalyticsController@revenueKpi');
 });
