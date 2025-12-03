@@ -15,6 +15,7 @@ chown www-data:www-data /var/www/html/storage/logs/lumen.log
 php artisan migrate --force --no-interaction
 php artisan db:seed --class=PatientsSeeder --force
 php artisan db:seed --class=InvoicesSeeder --force
+php artisan db:seed --class=PharmacySeeder --force
 
 
 # Start everything

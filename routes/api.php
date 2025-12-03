@@ -25,7 +25,7 @@ $router->get('/', function () {
     ]);
 });
 
-// Standard API (Prefix) Routes
+// Standard API () Routes
 $router->group(['prefix' => 'api'], function ($router) {
 
     // Patients Resource
@@ -41,7 +41,12 @@ $router->group(['prefix' => 'api'], function ($router) {
     $router->get('invoices/{invoice}', 'Api\InvoiceController@show');           // GET    /api/invoices/1
     $router->get('invoices/{invoice}/pdf', 'Api\InvoiceController@pdf');        // GET    /api/invoices/1/pdf
 
-    // Future routes (add later)
-    // $router->post('invoices', 'Api\InvoiceController@store');
-    // $router->get('analytics/revenue-kpi', 'Api\AnalyticsController@revenueKpi');
+    // Analytics Routes
+    $router->get('analytics/revenue-kpi', 'Api\AnalyticsController@revenueKpi'); // GET /api/analytics/revenue-kpi
+
+
+
+    $router->get('drugs', 'Api\DrugController@index');
+    $router->get('drugs/low-stock', 'Api\DrugController@lowStock');
+    $router->get('dispenses', 'Api\DispenseController@index');
 });
