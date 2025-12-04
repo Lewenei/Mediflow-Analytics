@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Router;
 
 /** @var Router $router */
@@ -10,7 +11,7 @@ $router->get('/', function () {
         'project'  => 'MediFlow Hospital Analytics',
         'version'  => '1.0',
         'status'   => 'running',
-        'message'  => 'Hospital Intelligence Platform – Ready',
+        'message'  => 'Hospital Intelligence Platform',
         'endpoints' => [
             '/api/patients',
             '/api/invoices',
