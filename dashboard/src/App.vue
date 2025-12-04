@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import Chart from 'chart.js/auto'
 
-const API_URL = 'https://mediflow-analytics.onrender.com/api'
+const API_URL = 'http://localhost:8000/api'
 
 const stats = ref({
   today: 0,
