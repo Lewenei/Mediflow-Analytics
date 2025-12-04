@@ -108,9 +108,8 @@ $app->register(App\Providers\EventServiceProvider::class);
 
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
-    'prefix'    => 'api',           // ← THIS LINE IS THE FIX
 ], function ($router) {
-    require __DIR__ . '/../routes/api.php';
+    require __DIR__.'/../routes/api.php';
 });
 
 

@@ -50,3 +50,8 @@ $router->group(['prefix' => 'api'], function ($router) {
     $router->get('drugs/low-stock', 'Api\DrugController@lowStock');
     $router->get('dispenses', 'Api\DispenseController@index');
 });
+// ROUTE CACHE BUST: Thu Dec  4 01:01:35 PM EAT 2025
+
+$router->get("/debug", function () {
+    return response()->json(["status" => "API ALIVE", "routes_loaded" => true, "patients_count" => \App\Models\Patient::count()]);
+});
