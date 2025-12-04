@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Dispense;
 
 class DispenseController extends Controller
 {
@@ -14,9 +15,13 @@ class DispenseController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(
+            Dispense::with(['patient', 'drug'])
+                ->latest()
+                ->take(100)
+                ->get()
+        );
     }
-
     /**
      * Store a newly created resource in storage.
      *

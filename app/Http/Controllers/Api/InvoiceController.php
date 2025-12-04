@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Invoice;
 
 class InvoiceController extends Controller
 {
@@ -14,7 +15,9 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(
+            Invoice::all()
+        );
     }
 
     /**
@@ -34,9 +37,10 @@ class InvoiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Invoice $invoice)
     {
-        //
+        $invoice->load('patient', 'items');
+        return response()->json($invoice);
     }
 
     /**
