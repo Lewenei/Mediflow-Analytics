@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MediFlow Hospital API — Interactive Docs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://unpkg.com/@hoppscotch/io@4/dist/style.min.css">
+  <style>
+    body { margin:0; font-family: 'Inter', sans-serif; background: #f8fafc; }
+    .header { background: #065f46; color: white; padding: 2rem; text-align: center; }
+    .header h1 { margin:0; font-size: 2.5rem; }
+    .header p { opacity: 0.9; font-size: 1.2rem; }
+  </style>
+</head>
+<body>
+  <div class="header>
+    <h1>MediFlow Hospital API</h1>
+    <p>Real-time Kenyan Hospital System • NHIF • Pharmacy • PDF Bills • Built by Brian</p>
+  </div>
+
+  <hoppscotch-io base-url="https://mediflow-hospital-analytics-system.onrender.com/api"></hoppscotch-io>
+
+  <script src="httpsunpkg.com/@hoppscotch/io@4"></script>
+  <script>
+    // Auto-fill your live API base URL
+    document.querySelector('hoppscotch-io').setAttribute('base-url', 
+      window.location.origin + '/api'
+    );
+  </script>
+</body>
+</html>
