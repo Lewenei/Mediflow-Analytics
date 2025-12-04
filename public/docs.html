@@ -22,14 +22,14 @@
 <body>
   <div class="header">
     <h1>MediFlow Hospital API</h1>
-    <p>Click to test live endpoints • Real Kenyan data • NHIF • Pharmacy • Built by Brian</p>
+    <p>Click to test live endpoints • Real Kenyan data • SHA • Pharmacy • Built by Brian</p>
   </div>
 
   <div class="container mx-auto px-6 py-8 max-w-4xl">
     <div class="endpoint">
       <span class="method-get">GET</span>
       <div class="path">/api/patients</div>
-      <p class="text-gray-600">520+ real Kenyan patients with NHIF numbers</p>
+      <p class="text-gray-600">520+ real Kenyan patients with SHA numbers</p>
       <button onclick="testEndpoint('/api/patients')">Test</button>
       <pre id="patients-response" class="mt-4 hidden"></pre>
     </div>
@@ -37,7 +37,7 @@
     <div class="endpoint">
       <span class="method-get">GET</span>
       <div class="path">/api/invoices</div>
-      <p class="text-gray-600">250+ real invoices with NHIF claims</p>
+      <p class="text-gray-600">250+ real invoices with SHA claims</p>
       <button onclick="testEndpoint('/api/invoices')">Test</button>
       <pre id="invoices-response" class="mt-4 hidden"></pre>
     </div>
