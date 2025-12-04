@@ -1,57 +1,51 @@
 <?php
 
-use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Router;
 
 /** @var Router $router */
 
-// Welcome message
+// Welcome message at /api (because of prefix in bootstrap/app.php)
 $router->get('/', function () {
     return response()->json([
         'project'  => 'MediFlow Hospital Analytics',
         'version'  => '1.0',
         'status'   => 'running',
-        'message'  => 'Hospital Intelligence Platform – Empowering Healthcare with Data-Driven Insights',
+        'message'  => 'Hospital Intelligence Platform – Ready',
         'endpoints' => [
-            'GET    /api/patients',
-            'GET    /api/patients/{id}',
-            'POST   /api/patients',
-            'GET    /api/invoices',
-            'GET    /api/invoices/{id}',
-            'GET    /api/invoices/{id}/pdf',
-            'GET    /api/analytics/revenue-kpi (coming soon)',
+            '/api/patients',
+            '/api/invoices',
+            '/api/invoices/{id}/pdf',
+            '/api/drugs',
+            '/api/drugs/low-stock',
+            '/api/dispenses',
+            '/api/analytics/revenue-kpi',
+            '/api/debug',
         ],
-        'demo' => 'https://mediflow-analytics.onrender.com',
     ]);
 });
 
-// Standard API () Routes
-$router->group(['prefix' => 'api'], function ($router) {
+// ALL ROUTES — NO PREFIX HERE ANYMORE!
+$router->get('patients', 'Api\PatientController@index');
+$router->post('patients', 'Api\PatientController@store');
+$router->get('patients/{patient}', 'Api\PatientController@show');
 
-    // Patients Resource
-    $router->group(['prefix' => 'patients'], function ($router) {
-        $router->get('/', 'Api\PatientController@index');        // GET    /api/patients
-        $router->post('/', 'Api\PatientController@store');       // POST   /api/patients
-        $router->get('/{patient}', 'Api\PatientController@show'); // GET    /api/patients/123
-        // TO-DO   Add PUT/PATCH /api/patients/{id} and DELETE
-    });
+$router->get('invoices', 'Api\InvoiceController@index');
+$router->get('invoices/{invoice}', 'Api\InvoiceController@show');
+$router->get('invoices/{invoice}/pdf', 'Api\InvoiceController@pdf');
 
-    // Invoices Resource + PDF
-    $router->get('invoices', 'Api\InvoiceController@index');                    // GET    /api/invoices
-    $router->get('invoices/{invoice}', 'Api\InvoiceController@show');           // GET    /api/invoices/1
-    $router->get('invoices/{invoice}/pdf', 'Api\InvoiceController@pdf');        // GET    /api/invoices/1/pdf
+$router->get('analytics/revenue-kpi', 'Api\AnalyticsController@revenueKpi');
 
-    // Analytics Routes
-    $router->get('analytics/revenue-kpi', 'Api\AnalyticsController@revenueKpi'); // GET /api/analytics/revenue-kpi
+$router->get('drugs', 'Api\DrugController@index');
+$router->get('drugs/low-stock', 'Api\DrugController@lowStock');
 
+$router->get('dispenses', 'Api\DispenseController@index');
 
-
-    $router->get('drugs', 'Api\DrugController@index');
-    $router->get('drugs/low-stock', 'Api\DrugController@lowStock');
-    $router->get('dispenses', 'Api\DispenseController@index');
-});
-// ROUTE CACHE BUST: Thu Dec  4 01:01:35 PM EAT 2025
-
-$router->get("/debug", function () {
-    return response()->json(["status" => "API ALIVE", "routes_loaded" => true, "patients_count" => \App\Models\Patient::count()]);
+$router->get('debug', function () {
+    return response()->json([
+        'status' => 'API LIVE',
+        'patients' => \App\Models\Patient::count(),
+        'invoices' => \App\Models\Invoice::count(),
+        'drugs' => \App\Models\Drug::count(),
+        'dispenses' => \App\Models\Dispense::count(),
+    ]);
 });
