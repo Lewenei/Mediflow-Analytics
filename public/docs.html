@@ -2,30 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MediFlow Hospital API — Interactive Docs</title>
+  <title>MediFlow Hospital API — Try It Live</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://unpkg.com/@hoppscotch/io@4/dist/style.min.css">
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <style>
     body { margin:0; font-family: 'Inter', sans-serif; background: #f8fafc; }
     .header { background: #065f46; color: white; padding: 2rem; text-align: center; }
     .header h1 { margin:0; font-size: 2.5rem; }
     .header p { opacity: 0.9; font-size: 1.2rem; }
+    .endpoint { background: white; margin: 1rem; padding: 1.5rem; border-radius: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .method-get { background: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.25rem; font-weight: bold; }
+    .path { font-family: monospace; font-size: 1.1rem; margin: 0.5rem 0; color: #374151; }
+    button { background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.25rem; cursor: pointer; font-weight: bold; }
+    button:hover { background: #059669; }
+    pre { background: #f3f4f6; padding: 1rem; border-radius: 0.25rem; overflow-x: auto; font-size: 0.875rem; }
+    .loading { opacity: 0.6; }
   </style>
 </head>
 <body>
-  <div class="header>
+  <div class="header">
     <h1>MediFlow Hospital API</h1>
-    <p>Real-time Kenyan Hospital System • NHIF • Pharmacy • PDF Bills • Built by Brian</p>
+    <p>Click to test live endpoints • Real data • NHIF • Pharmacy • Built by Brian</p>
   </div>
 
-  <hoppscotch-io base-url="https://mediflow-hospital-analytics-system.onrender.com/api"></hoppscotch-io>
+  <div class="container mx-auto px-6 py-8 max-w-4xl">
+    <div class="endpoint">
+      <span class="method-get">GET</span>
+      <div class="path">/api/patients</div>
+      <p class="text-gray-600">500+ patients with SHA numbers</p>
+      <button onclick="testEndpoint('/api/patients')">Test</button>
+      <pre id="patients-response" class="mt-4 hidden"></pre>
+    </div>
 
-  <script src="httpsunpkg.com/@hoppscotch/io@4"></script>
+    <div class="endpoint">
+      <span class="method-get">GET</span>
+      <div class="path">/api/invoices</div>
+      <p class="text-gray-600">250+ real invoices with SHA claims</p>
+      <button onclick="testEndpoint('/api/invoices')">Test</button>
+      <pre id="invoices-response" class="mt-4 hidden"></pre>
+    </div>
+
+    <div class="endpoint">
+      <span class="method-get">GET</span>
+      <div class="path">/api/invoices/1/pdf</div>
+      <p class="text-gray-600">Download printable PDF bill</p>
+      <a href="/api/invoices/1/pdf" target="_blank" class="button">Download PDF</a>
+    </div>
+
+    <div class="endpoint">
+      <span class="method-get">GET</span>
+      <div class="path">/api/drugs</div>
+      <p class="text-gray-600">200+ real Kenyan drugs with stock levels</p>
+      <button onclick="testEndpoint('/api/drugs')">Test</button>
+      <pre id="drugs-response" class="mt-4 hidden"></pre>
+    </div>
+
+    <div class="endpoint">
+      <span class="method-get">GET</span>
+      <div class="path">/api/drugs/low-stock</div>
+      <p class="text-gray-600">Real-time low stock alerts</p>
+      <button onclick="testEndpoint('/api/drugs/low-stock')">Test</button>
+      <pre id="lowstock-response" class="mt-4 hidden"></pre>
+    </div>
+
+    <div class="endpoint">
+      <span class="method-get">GET</span>
+      <div class="path">/api/analytics/revenue-kpi</div>
+      <p class="text-gray-600">Live revenue dashboard data</p>
+      <button onclick="testEndpoint('/api/analytics/revenue-kpi')">Test</button>
+      <pre id="revenue-response" class="mt-4 hidden"></pre>
+    </div>
+  </div>
+
   <script>
-    // Auto-fill your live API base URL
-    document.querySelector('hoppscotch-io').setAttribute('base-url', 
-      window.location.origin + '/api'
-    );
+    async function testEndpoint(path) {
+      const btn = event.target;
+      btn.textContent = 'Loading...';
+      btn.classList.add('loading');
+
+      try {
+        const res = await axios.get(path);
+        const responseId = path.replace(/\//g, '-').replace(/{[^}]+}/g, 'id') + '-response';
+        const pre = document.getElementById(responseId);
+        pre.textContent = JSON.stringify(res.data, null, 2);
+        pre.classList.remove('hidden');
+      } catch (e) {
+        alert('Error: ' + (e.response?.data?.message || e.message));
+      }
+
+      btn.textContent = 'Test';
+      btn.classList.remove('loading');
+    }
   </script>
 </body>
 </html>
