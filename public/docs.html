@@ -15,21 +15,21 @@
     .path { font-family: monospace; font-size: 1.1rem; margin: 0.5rem 0; color: #374151; }
     button { background: #10b981; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.25rem; cursor: pointer; font-weight: bold; }
     button:hover { background: #059669; }
-    pre { background: #f3f4f6; padding: 1rem; border-radius: 0.25rem; overflow-x: auto; font-size: 0.875rem; }
-    .loading { opacity: 0.6; }
+    .loading { opacity: 0.6; cursor: wait; }
+    pre { background: #f3f4f6; padding: 1rem; border-radius: 0.25rem; overflow-x: auto; font-size: 0.875rem; white-space: pre-wrap; }
   </style>
 </head>
 <body>
   <div class="header">
     <h1>MediFlow Hospital API</h1>
-    <p>Click to test live endpoints • Real data • NHIF • Pharmacy • Built by Brian</p>
+    <p>Click to test live endpoints • Real Kenyan data • NHIF • Pharmacy • Built by Brian</p>
   </div>
 
   <div class="container mx-auto px-6 py-8 max-w-4xl">
     <div class="endpoint">
       <span class="method-get">GET</span>
       <div class="path">/api/patients</div>
-      <p class="text-gray-600">500+ patients with SHA numbers</p>
+      <p class="text-gray-600">520+ real Kenyan patients with NHIF numbers</p>
       <button onclick="testEndpoint('/api/patients')">Test</button>
       <pre id="patients-response" class="mt-4 hidden"></pre>
     </div>
@@ -37,7 +37,7 @@
     <div class="endpoint">
       <span class="method-get">GET</span>
       <div class="path">/api/invoices</div>
-      <p class="text-gray-600">250+ real invoices with SHA claims</p>
+      <p class="text-gray-600">250+ real invoices with NHIF claims</p>
       <button onclick="testEndpoint('/api/invoices')">Test</button>
       <pre id="invoices-response" class="mt-4 hidden"></pre>
     </div>
@@ -76,7 +76,12 @@
 
   <script>
     async function testEndpoint(path) {
-      const btn = event.target;
+      const btn = event ? event.target : this;  // Fix for event.target null
+      if (!btn) {
+        alert('Button not found — refresh page');
+        return;
+      }
+
       btn.textContent = 'Loading...';
       btn.classList.add('loading');
 
@@ -84,10 +89,14 @@
         const res = await axios.get(path);
         const responseId = path.replace(/\//g, '-').replace(/{[^}]+}/g, 'id') + '-response';
         const pre = document.getElementById(responseId);
-        pre.textContent = JSON.stringify(res.data, null, 2);
-        pre.classList.remove('hidden');
+        if (pre) {
+          pre.textContent = JSON.stringify(res.data, null, 2).slice(0, 1000) + (res.data.length > 1000 ? '...' : '');
+          pre.classList.remove('hidden');
+        } else {
+          alert('Success! Response: ' + JSON.stringify(res.data, null, 2).slice(0, 200));
+        }
       } catch (e) {
-        alert('Error: ' + (e.response?.data?.message || e.message));
+        alert('Error: ' + (e.response?.data?.message || e.message || e.toString()));
       }
 
       btn.textContent = 'Test';
