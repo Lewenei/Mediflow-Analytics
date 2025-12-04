@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Drug;
 
 class DrugController extends Controller
 {
@@ -15,7 +14,7 @@ class DrugController extends Controller
      */
     public function index()
     {
-        return response()->json(Drug::all());
+        //
     }
 
     /**
@@ -61,18 +60,5 @@ class DrugController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-
-    public function lowStock()
-    {
-        $low = Drug::whereColumn('current_stock', '<=', 'reorder_level')
-            ->orderBy('current_stock')
-            ->get();
-
-        return response()->json([
-            'alert' => $low->count() . ' drugs below reorder level',
-            'drugs' => $low
-        ]);
     }
 }

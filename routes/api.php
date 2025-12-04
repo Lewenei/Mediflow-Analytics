@@ -25,34 +25,33 @@ $router->get('/', function () {
     ]);
 });
 
+// Standard API () Routes
 $router->group(['prefix' => 'api'], function ($router) {
 
-    // Patients
-    $router->get('patients', 'Api\PatientController@index');
-    $router->post('patients', 'Api\PatientController@store');
-    $router->get('patients/{patient}', 'Api\PatientController@show');
+    // Patients Resource
+    $router->group(['prefix' => 'patients'], function ($router) {
+        $router->get('/', 'Api\PatientController@index');        // GET    /api/patients
+        $router->post('/', 'Api\PatientController@store');       // POST   /api/patients
+        $router->get('/{patient}', 'Api\PatientController@show'); // GET    /api/patients/123
+        // TO-DO   Add PUT/PATCH /api/patients/{id} and DELETE
+    });
 
-    // Invoices + PDF
-    $router->get('invoices', 'Api\InvoiceController@index');
-    $router->get('invoices/{invoice}', 'Api\InvoiceController@show');
-    $router->get('invoices/{invoice}/pdf', 'Api\InvoiceController@pdf');
+    // Invoices Resource + PDF
+    $router->get('invoices', 'Api\InvoiceController@index');                    // GET    /api/invoices
+    $router->get('invoices/{invoice}', 'Api\InvoiceController@show');           // GET    /api/invoices/1
+    $router->get('invoices/{invoice}/pdf', 'Api\InvoiceController@pdf');        // GET    /api/invoices/1/pdf
 
-    // Analytics
-    $router->get('analytics/revenue-kpi', 'Api\AnalyticsController@revenueKpi');
+    // Analytics Routes
+    $router->get('analytics/revenue-kpi', 'Api\AnalyticsController@revenueKpi'); // GET /api/analytics/revenue-kpi
 
-    // Pharmacy
+
+
     $router->get('drugs', 'Api\DrugController@index');
     $router->get('drugs/low-stock', 'Api\DrugController@lowStock');
     $router->get('dispenses', 'Api\DispenseController@index');
-
-    // Debug
-    $router->get('debug', function () {
-        return [
-            "status" => "API ALIVE",
-            "patients" => \App\Models\Patient::count(),
-            "invoices" => \App\Models\Invoice::count(),
-            "drugs" => \App\Models\Drug::count(),
-        ];
-    });
 });
+// ROUTE CACHE BUST: Thu Dec  4 01:01:35 PM EAT 2025
 
+$router->get("/debug", function () {
+    return response()->json(["status" => "API ALIVE", "routes_loaded" => true, "patients_count" => \App\Models\Patient::count()]);
+});

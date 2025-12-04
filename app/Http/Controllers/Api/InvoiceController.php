@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Invoice;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class InvoiceController extends Controller
 {
@@ -16,9 +14,7 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        return response()->json(
-            Invoice::all()
-        );
+        //
     }
 
     /**
@@ -64,13 +60,5 @@ class InvoiceController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-
-    public function pdf(Invoice $invoice)
-    {
-        $invoice->load('patient', 'items');
-        $pdf = Pdf::loadView('invoice.pdf', compact('invoice'));
-        return $pdf->stream('invoice-' . $invoice->invoice_number . '.pdf');
     }
 }
