@@ -40,8 +40,7 @@ The landing page should look like this
 
 ---
 Check API docs and test API endpoints
-![Landing Page](screenshots/api docs.png)  
-*Live stats • Real revenue*
+![API Docs Page](screenshots/apidocs.png)
 
 
 ### How to Run Locally (30 seconds)
