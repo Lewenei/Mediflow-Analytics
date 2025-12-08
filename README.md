@@ -1,7 +1,14 @@
 # MediFlow Hospital Analytics System  
 **Real-time Kenyan Hospital Management Platform with NHIF/SHA, Pharmacy,  PDF Bills and Live Dashboard**
 
-Live Demo: https://mediflow-hospital-analytics-system.onrender.com  
+Live Demo: https://mediflow-hospital-analytics-system.onrender.com 
+
+Demo requires 50 seconds to load. Please be patient!
+
+The landing page should look like this
+![Landing Page](screenshots/landingpage.png)  
+*Live stats • Real revenue • CEO-ready design*
+
 API Docs (Try Live): https://mediflow-hospital-analytics-system.onrender.com/docs.html  
 Dashboard: https://mediflow-hospital-analytics-system.onrender.com/dashboard.html
 
@@ -12,7 +19,7 @@ Built by **Brian Ngetich** — Full-Stack PHP/Laravel Developer
 ### Features (Production-Ready)
 
 - 500+ real Kenyan patients with NHIF numbers
-- 200+ real invoices with NHIF claims & copay logic
+- 200+ real invoices with SHA claims & copay logic
 - Real printable PDF bills (`/api/invoices/{id}/pdf`)
 - Full pharmacy module (200+ drugs + dispensing + low-stock alerts)
 - Live revenue KPIs & executive dashboard
@@ -37,6 +44,8 @@ Built by **Brian Ngetich** — Full-Stack PHP/Laravel Developer
 | `GET /dashboard.html`            | Executive real-time dashboard        |
 
 ---
+
+
 
 ### How to Run Locally (30 seconds)
 
